@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,36 @@ import com.example.todayPlan.vo.PlanVO;
 
 @Repository
 public class TodayPlanDAO {
+	
+	private DataSource dataSource;
+	
+	
+	public TodayPlanDAO(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	@PostConstruct
+    public void init() {
+        try (Connection conn = dataSource.getConnection()) {
+            System.out.println("✅ H2 메모리 DB 연결됨!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+	
+	public Connection open() {
+		try {
+			return dataSource.getConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/*
 	final String JDBC_DRIVER = "org.h2.Driver";
 	final String JDBC_URL = "jdbc:h2:tcp://localhost/~/todayplan";
+	
 	
 	public Connection open() {
 		Connection conn = null;
@@ -33,7 +62,7 @@ public class TodayPlanDAO {
 		}
 		return conn;
 	}
-	
+	*/
 	public List<CalendarVO> getCalendarList(int year) throws SQLException {
 		
 		Connection conn = open();
