@@ -11,11 +11,6 @@ hs_err_pid*
 # Maven build output
 /target/
 
-# Maven Wrapper (필요 시 제외 가능)
-/.mvn/
-mvnw
-mvnw.cmd
-
 # ====================
 # Eclipse
 # ====================
