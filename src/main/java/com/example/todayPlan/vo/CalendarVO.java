@@ -1,7 +1,5 @@
 package com.example.todayPlan.vo;
 
-import java.util.Date;
-
 public class CalendarVO {
 	private int calendarId;
 	private String fullDate;

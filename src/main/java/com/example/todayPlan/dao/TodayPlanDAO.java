@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class TodayPlanDAO {
     public void init() {
         try (Connection conn = dataSource.getConnection()) {
             System.out.println("✅ H2 메모리 DB 연결됨!");
+            System.out.println("✅ 현재 연결된 DB URL: " + conn.getMetaData().getURL());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,36 +48,19 @@ public class TodayPlanDAO {
 		}
 	}
 	
-	/*
-	final String JDBC_DRIVER = "org.h2.Driver";
-	final String JDBC_URL = "jdbc:h2:tcp://localhost/~/todayplan";
-	
-	
-	public Connection open() {
-		Connection conn = null;
-	
-		try {
-			Class.forName(JDBC_DRIVER);
-			conn = DriverManager.getConnection(JDBC_URL,"jwm","0000");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return conn;
-	}
-	*/
 	public List<CalendarVO> getCalendarList(int year) throws SQLException {
 		
 		Connection conn = open();
 		List<CalendarVO> list = new ArrayList<CalendarVO>();
 		String sql = 	   "SELECT 	CALENDAR_ID "
-							+ ",YEAR ||'년'||MONTH ||'월'||DAY||'일'||'('||WEEK||')' AS FULL_DATE "
-							+ ",SUBSTRING(DT,0,4) AS YEAR "
-							+ ",SUBSTRING(DT,6,2) AS MONTH "
-							+ ",SUBSTRING(DT,9,2) AS DAY "
+							+ ",CONCAT(YEAR,'년',MONTH,'월',DAY,'일','(',WEEK,')') AS FULL_DATE "
+							+ ",SUBSTRING(DT, 1, 4) AS YEAR "
+							+ ",SUBSTRING(DT, 6, 2) AS MONTH "
+							+ ",SUBSTRING(DT, 9, 2) AS DAY "
 							+ ",WEEK "
 							+ ",HOLIDAY_YN "
 							+ ",HOLIDAY_NAME "
-							+ ",FORMATDATETIME(DT, 'yyyyMMdd') AS DT "
+							+ ",DATE_FORMAT(DT, '%Y%m%d') AS DT "
 							+ "FROM 	CALENDAR "
 							+ "WHERE  YEAR = ? ";
 		
@@ -104,16 +89,16 @@ public class TodayPlanDAO {
 		
 		Connection conn = open();
 		String sql = "SELECT A1.BOARD_ID, "
-				+ "	   SUBSTRING(A1.DT,0,4) AS YEAR, "
-				+ "	   SUBSTRING(A1.DT,6,2) AS MONTH, "
-				+ "	   SUBSTRING(A1.DT,9,2) AS DAY, "
-				+ "       FORMATDATETIME(A1.DT, 'yyyyMMdd') AS BOARD_FULL_DT, "
+				+ "	   SUBSTRING(A1.DT, 1, 4) AS YEAR, "
+				+ "	   SUBSTRING(A1.DT, 6, 2) AS MONTH, "
+				+ "	   SUBSTRING(A1.DT, 9, 2) AS DAY, "
+				+ "       DATE_FORMAT(DT, '%Y%m%d') AS BOARD_FULL_DT, "
 				+ "       A2.TITLE, "
 				+ "       A2.CONTENT, "
 				+ "       A2.BACK_COLOR, "
 				+ "       A2.COMMIT_CHK, "
-				+ "       FORMATDATETIME(A2.STRT_DT, 'yyyyMMdd') AS STRT_DT, "
-				+ "       FORMATDATETIME(A2.END_DT, 'yyyyMMdd') AS END_DT, "
+				+ "       DATE_FORMAT(A2.STRT_DT, '%Y%m%d') AS STRT_DT, "
+				+ "       DATE_FORMAT(A2.END_DT, '%Y%m%d') AS END_DT, "
 				+ "       A1.USER_ID, "
 				+ "       A2.PLAN_ID "
 				+ "FROM BOARD A1 "
@@ -151,16 +136,16 @@ public class TodayPlanDAO {
 		Connection conn = open();
 		List<BoardVO>board = new ArrayList<BoardVO>();
 		String sql = "SELECT A1.BOARD_ID, "
-				+ "SUBSTRING(A1.DT,0,4) AS YEAR, "
+				+ "SUBSTRING(A1.DT,1,4) AS YEAR, "
 				+ "SUBSTRING(A1.DT,6,2) AS MONTH, "
 				+ "SUBSTRING(A1.DT,9,2) AS DAY, "
-				+ "FORMATDATETIME(A1.DT, 'yyyyMMdd') AS BOARD_FULL_DT, "
+				+ "DATE_FORMAT(A1.DT, 'yyyyMMdd') AS BOARD_FULL_DT, "
 	            + "A2.TITLE, "
 	            + "A2.CONTENT, "
 	            + "A2.BACK_COLOR, "
 	            + "A2.COMMIT_CHK, "
-	            + "FORMATDATETIME(A2.STRT_DT, 'yyyyMMdd') AS STRT_DT, "
-	            + "FORMATDATETIME(A2.END_DT, 'yyyyMMdd') AS END_DT, "
+	            + "DATE_FORMAT(A2.STRT_DT, '%Y%m%d') AS STRT_DT, "
+	            + "DATE_FORMAT(A2.END_DT, '%Y%m%d') AS END_DT, "
 	            + "A1.USER_ID "
 	            + "FROM BOARD A1 "
 	            + "INNER JOIN PLAN A2 ON A1.BOARD_ID = A2.BOARD_ID "
@@ -194,68 +179,73 @@ public class TodayPlanDAO {
 	}
 	
 	public String addboard(BoardVO vo) throws SQLException {
-		Connection conn = open();
-		String getIdSql   = "SELECT NEXT VALUE FOR BOARD_SEQ";
-		String insertSql   = "INSERT INTO BOARD (BOARD_ID,USER_ID,DT) VALUES (?,?,?)";
 		
-		PreparedStatement getIdstmt = conn.prepareStatement(getIdSql);
-		ResultSet rs = getIdstmt.executeQuery();
-		
-		int seq;
-		try(conn; getIdstmt; rs;){
-			if(rs.next()) {
-				seq = rs.getInt(1);
-			}else {
-				throw new SQLException("시퀀스생성실패");
-			}
-			vo.setBoardId("board_"+seq);
-
-			PreparedStatement pstmt = conn.prepareStatement(insertSql);
-			
-			try(pstmt;){
-				pstmt.setString(1, vo.getBoardId());
-				pstmt.setString(2, vo.getUserId());
-				pstmt.setString(3, vo.getDt());
+		String insertSql = "INSERT INTO BOARD (USER_ID,DT) VALUES (?,?)";
+		try(Connection conn = open();
+				PreparedStatement pstmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);){
 				
+				pstmt.setString(1, vo.getUserId());
+				pstmt.setString(2, vo.getDt());
 				pstmt.executeUpdate();
-			}
+				
+				try(ResultSet generatedKeys = pstmt.getGeneratedKeys();){
+					if(generatedKeys.next()) {
+						int id = generatedKeys.getInt(1);
+						String  boardId = "board_" + id;
+						vo.setBoardId(boardId);
+						
+						String updateSql = "UPDATE BOARD SET BOARD_ID = ? WHERE ID = ?";
+						try(PreparedStatement updatePstmt = conn.prepareStatement(updateSql);){
+							updatePstmt.setString(1, boardId);
+							updatePstmt.setInt(2, id);
+							updatePstmt.executeUpdate();
+						}
+						return boardId;
+						
+					}else {
+						throw new SQLException("ID 생성 실패");
+					}
+				}
+			
+		}catch (Exception e) {
+			throw new SQLException("TodayPlanDAO.addboard 실패", e);
 		}
-		return "board_"+seq;
 	}
 	
 	public String addPlan(PlanVO vo) throws SQLException {
-		Connection conn = open();
-		String getIdSql = "SELECT NEXT VALUE FOR PLAN_SEQ";
-		String insertSql = "INSERT INTO PLAN(PLAN_ID, BOARD_ID, TITLE, COMMIT_CHK, CONTENT, BACK_COLOR, STRT_DT, END_DT)VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
-		
-		PreparedStatement getIdstmt = conn.prepareStatement(getIdSql);
-		ResultSet rs = getIdstmt.executeQuery();
-		
-		int seq;
-		
-		try(conn; getIdstmt; rs;){
-			if(rs.next()) {
-				seq = rs.getInt(1);
-			}else {
-				throw new SQLException("시퀀스생성실패");
-			}
+		String insertSql = "INSERT INTO PLAN(BOARD_ID, TITLE, COMMIT_CHK, CONTENT, BACK_COLOR, STRT_DT, END_DT)VALUES(?, ?, ?, ?, ?, ?, ?)";
+		try(Connection conn = open();
+				PreparedStatement pstmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)){
 			
-			PreparedStatement pstmt = conn.prepareStatement(insertSql);
-			try(pstmt;){
-				pstmt.setString(1, "plan_"+seq);
-				pstmt.setString(2, vo.getBoardId());
-				pstmt.setString(3, vo.getTitle());
-				pstmt.setString(4, vo.getCommitChk());
-				pstmt.setString(5, vo.getContent());
-				pstmt.setString(6, "white");
-				pstmt.setString(7, vo.getStrtDt());
-				pstmt.setString(8, vo.getEndDt());
-				
-				pstmt.executeUpdate();
+			pstmt.setString(1, vo.getBoardId());
+			pstmt.setString(2, vo.getTitle());
+			pstmt.setString(3, vo.getCommitChk());
+			pstmt.setString(4, vo.getContent());
+			pstmt.setString(5, "white");
+			pstmt.setString(6, vo.getStrtDt());
+			pstmt.setString(7, vo.getEndDt());
+			pstmt.executeUpdate();
+			
+			try(ResultSet generatedKeys = pstmt.getGeneratedKeys();){
+				if(generatedKeys.next()) {
+					int id = generatedKeys.getInt(1);
+					String palnId = "plan_" + id;
+					vo.setPlanId(palnId);
+					
+					String updateSql = "UPDATE PLAN SET PLAN_ID = ? WHERE ID = ?";
+					try(PreparedStatement updatePstmt = conn.prepareStatement(updateSql);){
+						updatePstmt.setString(1, palnId);
+						updatePstmt.setInt(2, id);
+						updatePstmt.executeUpdate();
+					}
+					return palnId;
+				}else {
+					throw new SQLException("ID 생성 실패");
+				}
 			}
+		}catch (Exception e) {
+			throw new SQLException("TodayPlanDAO.addPlan 실패", e);
 		}
-		
-		return "plan_"+seq;
 	}
 	
 	public void planChk(BoardVO vo) throws SQLException {
