@@ -5,10 +5,59 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Insert title here</title>
 <script src="/js/main.js"></script>
 <link rel="stylesheet" href="/css/main.css">
-  </style>
+<style>
+  @media (max-width: 768px) {
+    .mainTable,
+    .mainTable thead,
+    .mainTable tbody,
+    .mainTable th,
+    .mainTable td,
+    .mainTable tr {
+      display: block;
+      width: 100%;
+    }
+
+    .mainTable thead {
+      display: none;
+    }
+
+    .mainTable tr {
+      margin-bottom: 16px;
+      background: white;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .mainTable td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .mainTable td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #666;
+    }
+
+    .addBtn {
+      justify-content: center;
+    }
+
+    .addBtnStyle,
+    .addBtnEndStyle {
+      width: 100%;
+      font-size: 14px;
+    }
+  }
+</style>
 </head>
 <body>
 	<%@ include file="header.jsp" %>
@@ -41,11 +90,7 @@
 				</c:forEach>
 			</tbody>
 		</table>
-	
-	
-	
 	</div>
-	
 	<div class="divContainer">
 		<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     		<div class="modal-dialog modal-dialog-centered">
