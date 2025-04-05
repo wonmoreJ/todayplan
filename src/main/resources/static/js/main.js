@@ -320,21 +320,3 @@ function formatDate(dateStr) {
   const day = dateStr.slice(6, 8);
   return `${year}년 ${month}월 ${day}일`;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
