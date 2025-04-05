@@ -1,3 +1,6 @@
+  * {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
 .holidayY{
 	color : red;
 }
@@ -7,27 +10,321 @@
 .divContainer {
   padding-top: 50px; padding-bottom: 80px;
 }
-.modal_{
-	/*팝업 배경*/
-	display: none; /*평소에는 보이지 않도록*/
-    position: fixed;
-    top:0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    background: rgba(0,0,0,0.5);
-}
-.modal_ .modal_popup_ {
-/*팝업*/
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 20px;
-}
 .hide{
 	display: none;
+}
+
+/*플랜제목*/
+.boardTdTitle{
+	width: 90px;
+	text-align: center;
+	cursor: pointer;
+	padding: 0 10px;
+}
+.boardTdChk{
+	width: 90px;
+	text-align: center;
+	cursor: pointer;
+	padding: 0 10px;
+}
+.boardTdChkStyle{
+	width: 90px;
+	text-align: center;
+	padding: 0 10px;
+}
+
+.addBtnStyle{
+	width: 33px;
+	background-color: #a5c8fc;
+	color : white;
+	border : 0;
+	border-radius: 7px;
+	padding: 5px 5px 5px 5px;
+	font-weight: bold;
+}
+.addBtnEndStyle{
+	width: 33px;
+	color : white;
+	border : 0;
+	border-radius: 7px;
+	padding: 5px 5px 5px 5px;
+	font-weight: bold;
+}
+.mainTable{
+	/* border-collapse: collapse; */
+	border-collapse: separate; /* collapse 말고 separate로! */
+  	border-spacing: 10px ;
+  	user-select: none;      /* 드래그 선택 막기 */
+  	caret-color: transparent; /* 커서 색 투명하게 */
+}
+.addBtn{
+	width: 60px;
+	text-align: center;
+}
+/*추가버튼*/
+.addBtnHover:hover{
+	background-color: #0d6efd;
+}
+.tc{
+	text-align: center;
+}
+.chkOk{
+	text-decoration: line-through;
+	color: gray;
+}
+.chkNo{
+	text-decoration: none;
+	color: black;
+}		
+.noCursor{
+	caret-color: transparent;
+	outline: none;
+}
+.bold{
+	font-weight: bold;
+}
+.modal_ {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 999;
+}
+
+.modal_.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal_popup_ {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  position: relative;
+}
+
+.modal_header_ {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  caret-color: transparent;
+}
+
+.modal_header_ h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.modal_close_icon_ {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s ease;
+}
+
+.modal_close_icon_:hover {
+  color: #000;
+}
+
+.modal_body_ input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+.modal_footer_ {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.delete_btn,
+.close_btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete_btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.delete_btn:hover {
+  background-color: #dc2626;
+}
+
+.close_btn {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.close_btn:hover {
+  background-color: #e5e7eb;
+}
+.modal_label_ {
+   font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  letter-spacing: 0.2px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  cursor: default;
+  user-select: none;
+  caret-color: transparent;
+}
+.modal_popup_ input[type="text"] {
+  border: none;
+  background-color: transparent;
+  padding: 4px 0;
+  font-size: 14px;
+  color: #333;
+  pointer-events: none; /* 선택 방지 느낌 줄 수 있음 */
+}
+.modal_popup_ input[type="text"]:focus {
+  outline: none; /* 포커스 테두리 제거 */
+}
+.modal_section_ {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background-color: #fafafa;
+  margin-bottom: 12px;
+}
+
+.modal_label_group_ {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+.modal_icon_ {
+  font-size: 14px;
+}
+
+.modal_value_ {
+  font-size: 14px;
+  color: #222;
+  white-space: pre-wrap;
+  caret-color: transparent;
+}
+
+/* 모달 콘텐츠 */
+.modal-content {
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+/* 헤더 */
+.modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 바디 */
+.modal-body {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-body input[type="text"] {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #fafafa;
+}
+
+/* 푸터 */
+.modal-footer {
+  border-top: none;
+  padding-top: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 버튼 */
+.btn-primary {
+  background-color: #3b82f6;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-secondary {
+  background-color: #f3f4f6;
+  color: #111827;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+.divContainer {
+  padding: 24px;
+  background-color: #f9fafb;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.calTableTd {
+  background-color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+.addBtnStyle {
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.addBtnEndStyle {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: not-allowed;
 }

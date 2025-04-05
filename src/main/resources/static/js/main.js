@@ -1,3 +1,16 @@
+document.addEventListener("click", async function(e) {
+	if (e.target.classList.contains("boardTdTitle")) {
+		const boardId = e.target.id;
+		await getPlanInfo(boardId);
+		document.querySelector('.modal_').classList.add('show');
+	}
+});
+
+document.addEventListener("keydown", function (e) {
+	if (e.key === "Escape" && document.querySelector(".modal_").classList.contains("show")) {
+		document.querySelector(".modal_").classList.remove("show");
+	}
+});
 document.addEventListener("DOMContentLoaded", () => {
 	//메인화면 추가(+)버튼
 	document.querySelectorAll(".addBtn").forEach(btn => {
@@ -12,20 +25,23 @@ document.addEventListener("DOMContentLoaded", () => {
 		})	
 	});
 	
-	//plan상세클릭
-	document.querySelectorAll(".boardTdTitle").forEach(td => {
-		td.addEventListener("click", async function(){
-			const modal = document.querySelector(".modal_");
-			//document.getElementById("modal_boardId").value = this.id;
-			await getPlanInfo(this.id);
-			modal.style.display = 'block';
-		})	
+	document.getElementById("modal_close_icon").addEventListener("click", () => {
+	  document.querySelector(".modal_").classList.remove("show");
 	});
 	
 	//plan상세닫기
 	document.getElementById("modal_close_btn").addEventListener("click", function(){
-		const modal = document.querySelector(".modal_");
-		modal.style.display = 'none';
+		document.querySelector('.modal_').classList.remove('show');
+	});
+	
+	// 배경 클릭 시 모달 닫기
+	document.querySelector(".modal_").addEventListener("click", function (e) {
+	  const popup = document.querySelector(".modal_popup_");
+
+	  // 클릭한 대상이 팝업 내부가 아니면 (=배경 클릭)
+	  if (!popup.contains(e.target)) {
+		document.querySelector('.modal_').classList.remove('show');
+	  }
 	});
 	
 	//paln삭제
@@ -35,22 +51,45 @@ document.addEventListener("DOMContentLoaded", () => {
 		if(result == "ok"){
 			[boardId,"chk"+boardId].forEach(id => document.getElementById(id).remove());
 			const modal = document.querySelector(".modal_");
-			modal.style.display = 'none';
+			document.querySelector('.modal_').classList.remove('show');
 		}
 		todayRate();
 	});
 	
-	//체크박스클릭
+	//체크박스td클릭
 	document.querySelectorAll(".boardTdChk").forEach(btn => {
 		btn.addEventListener("click", async function(){
 			const id = this.id.replace("chk","");
 			const chkId = "chkBox"+this.id.replace("chk",""); 
+			var chkResult = "";
+			
+			if(document.getElementById(chkId).checked){
+				chkResult = "N";
+				document.getElementById(chkId).checked = false;
+			}else{
+				chkResult = "Y";
+				document.getElementById(chkId).checked = true;
+			}
 			const planData = {
 				"boardId": id,
-				"commitChk" : document.getElementById(chkId).checked ? "Y" : "N"	
+				"commitChk" : chkResult	
 			}
 			await planChk(planData);
 		})
+	});
+	
+	//체크박스클릭
+	document.querySelectorAll(".tdChk").forEach(chkBox => {
+		chkBox.addEventListener("click", async function(e){
+			e.stopPropagation();
+			const id = this.id.replace("chkBox","");
+			const planData = {
+				"boardId": id,
+				"commitChk" : document.getElementById(this.id).checked ? "Y" : "N"	
+			}
+			await planChk(planData);
+			
+		});
 	});
 	
 	//모달창 추가버튼
@@ -93,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function planChk(planData){
-
 	try{
 		const res = await fetch("/toplan/planChk",{
 			method: "POST",
@@ -105,6 +143,7 @@ async function planChk(planData){
 		
 		if(res.ok){
 			console.log("체크완료");
+			document.getElementById(planData.boardId).classList.toggle("chkOk");
 			todayRate();
 		}
 		
@@ -149,11 +188,24 @@ async function getPlanInfo(boardId){
 																		body : boardId 	});
 		const result = await res.json();
 
-		["modal_boardId", "modal_year", "modal_month", "modal_day", "modal_boardFullDt", "modal_title"      
-		,"modal_content", "modal_backColor", "modal_commitChk", "modal_strtDt", "modal_endDt", "modal_userId"].forEach(id => {
+		["modal_boardId", "modal_year", "modal_month", "modal_day"      
+		, "modal_backColor", "modal_commitChk", "modal_strtDt", "modal_endDt", "modal_userId"].forEach(id => {
 			const key = id.replace("modal_", "");
 			document.getElementById(id).value = result[key] ?? "";
 		});
+
+		const paramDt 	= result["boardFullDt"];
+		const nowDt 	  	= new Date();
+		document.getElementById("modal_boardFullDt_view").textContent = formatDate(result["boardFullDt"]);
+		document.getElementById("modal_title_view").textContent = result["title"];
+		document.getElementById("modal_content_view").textContent = result["content"];
+		if(nowDt > new Date(paramDt.substring(0,4)+"-"+paramDt.substring(4,6)+"-"+paramDt.substring(6,8))){
+			document.getElementById("modal_delete_btn").style.display = "none";
+		}else{
+			document.getElementById("modal_delete_btn").style.display = "block";
+		}
+		
+		
 	}catch (e) {
 		alert("조회오류");
 		console.error(e);
@@ -179,6 +231,7 @@ async function deletePlan(boardId){
 
 //plan추가함수
 function addPlan(planInfo){
+	console.log(planInfo.dt);
 	const tr1 	     = document.getElementById("calTr"+planInfo.dt);
     const cell1 	 = tr1.insertCell(tr1.childElementCount-1);
     cell1.setAttribute("id", planInfo.boardId);
@@ -188,15 +241,27 @@ function addPlan(planInfo){
     const tr2		 = document.getElementById("calChk"+planInfo.dt);
     const cell2 	 = tr2.insertCell(tr2.childElementCount);
     cell2.setAttribute("id", "chk"+planInfo.boardId);
-    cell2.setAttribute("class", "boardTdChk");
-    cell2.innerHTML = "<input type='checkbox' id='chkBox"+planInfo.boardId+"'>"; 			
 	
+	let chkHtml = "";
+	const paramDt = planInfo.dt;
+	const nowDt = new Date();
+
+	if(nowDt > new Date(paramDt.substring(0,4)+"-"+paramDt.substring(4,6)+"-"+paramDt.substring(6,8))){
+		chkHtml = "<input type='checkbox' disabled='disabled' class='tdChk' id='chkBox"+planInfo.boardId+"'>"; 
+	    cell2.setAttribute("class", "boardTdChkStyle");
+	}else{
+		chkHtml = "<input type='checkbox' class='tdChk' id='chkBox"+planInfo.boardId+"'>"; 
+		cell2.setAttribute("class", "boardTdChk");
+	}
+    
+	cell2.innerHTML = chkHtml; 			
 	
 	const modalElement = document.getElementById('myModal');
 	const modal = bootstrap.Modal.getInstance(modalElement);
 	
 	if(planInfo.commitChk == "Y"){
 		document.getElementById("chkBox"+planInfo.boardId).checked = true;
+		document.getElementById(planInfo.boardId).classList.toggle("chkOk");
 	}
 	
 	if(planInfo.param == "add"){
@@ -233,11 +298,28 @@ function todayRate(){
 		});
 		result = Math.trunc((cnt/total)*100);
 	}
-	document.getElementById("todayRate").innerText = result + "%"
+	
+	let emozi = "";
+	if(result == 0){
+		emozi = "😑"; 
+	}else if(result < 50){
+		emozi = "😐";
+	}else if(result < 75){
+		emozi = "😊";
+	}else if(result == 100){
+		emozi = "😘";
+	}
+	
+	document.getElementById("todayRate").innerText = result + "% " + emozi;
 }
 
-
-
+function formatDate(dateStr) {
+  if (dateStr.length !== 8) return dateStr;
+  const year = dateStr.slice(0, 4);
+  const month = dateStr.slice(4, 6);
+  const day = dateStr.slice(6, 8);
+  return `${year}년 ${month}월 ${day}일`;
+}
 
 
 

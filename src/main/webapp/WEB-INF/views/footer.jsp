@@ -12,10 +12,11 @@ footer {
   bottom: 0; left: 0;
   height: 80px;
   width: 100%;
-  background-color: #ddd;
+  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #a5c8fc;
 }
 
 .footer_container {
@@ -36,6 +37,7 @@ footer {
   width: 100%;
   height: 100%;
   border-collapse: collapse;
+  caret-color: transparent; /* 커서 색 투명하게 */
 }
 
 .footer_div th,
@@ -46,6 +48,7 @@ footer {
   vertical-align: middle;
 }
 </style>
+<link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 	<footer>
@@ -53,43 +56,14 @@ footer {
 			<div class="footer_div">
 				<table>
 					<tr>
-						<th>오늘달성률</th>
+						<td>오늘달성률</td>
 					</tr>
 					<tr>
 						<td><span id="todayRate">0%</span></td>
 					</tr>
 				</table>
 			</div>
-			<div class="footer_div">
-				<table>
-					<tr>
-						<th>이번주달성률</th>
-					</tr>
-					<tr>
-						<td>0%</td>
-					</tr>
-				</table>
-			</div>
-			<div class="footer_div">
-				<table>
-					<tr>
-						<th>이번달달성률</th>
-					</tr>
-					<tr>
-						<td>0%</td>
-					</tr>
-				</table>
-			</div>
-			<div class="footer_div">
-				<table>
-					<tr>
-						<th>이번년달성률</th>
-					</tr>
-					<tr>
-						<td>0%</td>
-					</tr>
-				</table>
-			</div>
+			
 		</div>	
 	</footer>
 </body>

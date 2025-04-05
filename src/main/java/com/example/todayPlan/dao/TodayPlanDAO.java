@@ -32,7 +32,7 @@ public class TodayPlanDAO {
 	@PostConstruct
     public void init() {
         try (Connection conn = dataSource.getConnection()) {
-            System.out.println("✅ H2 메모리 DB 연결됨!");
+            System.out.println("✅ Docker MySql 메모리 DB 연결됨!");
             System.out.println("✅ 현재 연결된 DB URL: " + conn.getMetaData().getURL());
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +60,10 @@ public class TodayPlanDAO {
 							+ ",WEEK "
 							+ ",HOLIDAY_YN "
 							+ ",HOLIDAY_NAME "
-							+ ",DATE_FORMAT(DT, '%Y%m%d') AS DT "
+							+ ",DATE_FORMAT(DT, '%Y%m%d') AS DT, "
+							+ "CASE WHEN DT < CURDATE()+1 " 
+							+ "THEN 'N' "
+							+ "ELSE 'Y' END AS DT_RESULT "
 							+ "FROM 	CALENDAR "
 							+ "WHERE  YEAR = ? ";
 		
@@ -78,6 +81,7 @@ public class TodayPlanDAO {
 				vo.setWeek(rs.getString("WEEK"));
 				vo.setHolidayYn(rs.getString("HOLIDAY_YN"));
 				vo.setHolidayName(rs.getString("HOLIDAY_NAME"));
+				vo.setDtResult(rs.getString("DT_RESULT"));
 				
 				list.add(vo);
 			}

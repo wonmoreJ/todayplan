@@ -10,6 +10,7 @@ public class CalendarVO {
 	private String holidayYn;
 	private String holidayName;
 	private String dt;
+	private String dtResult;
 	
 	public int getCalendarId() {
 		return calendarId;
@@ -64,5 +65,11 @@ public class CalendarVO {
 	}
 	public void setDt(String dt) {
 		this.dt = dt;
+	}
+	public String getDtResult() {
+		return dtResult;
+	}
+	public void setDtResult(String dtResult) {
+		this.dtResult = dtResult;
 	}
 }
