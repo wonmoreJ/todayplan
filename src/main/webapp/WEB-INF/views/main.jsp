@@ -7,8 +7,8 @@ prefix="c" %>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Insert title here</title>
+    <script type="module" src="/js/main.js"></script>
     <script src="/js/common.js"></script>
-    <script src="/js/main.js"></script>
     <link rel="stylesheet" href="/css/main.css" />
     <link rel="icon" href="data:," />
   </head>
@@ -171,42 +171,43 @@ prefix="c" %>
         </div>
       </div>
     </div>
-    <script type="text/javascript">
+    <script type="module">
+	  	import { addPlan } from '/js/events/planEvents.js';
+      
+		let now = getDateFormat('yyyyMMdd', new Date());
 
-      let now = getDateFormat('yyyyMMdd', new Date());
+      	document.getElementById("calTr"+now).style.outline = "none";
+     	document.getElementById("calTr"+now).focus();
+      	document.getElementById("calTr"+now).firstElementChild.style.backgroundColor = '#f7f787';
 
-      document.getElementById("calTr"+now).style.outline = "none";
-      document.getElementById("calTr"+now).focus();
-      document.getElementById("calTr"+now).firstElementChild.style.backgroundColor = '#f7f787';
+      	//plan추가
+      	const planList = [
+      		<c:forEach var="plan" items="${planList}" varStatus="loop">
+      		{
+      			boardId : "${plan.boardId}",
+      			year : "${plan.year}",
+      			month : "${plan.month}",
+      			day : "${plan.day}",
+      			boardFullDt : "${plan.boardFullDt}",
+      			title : "${plan.title}",
+      			content : "${plan.content}",
+      			backColor : "${plan.backColor}",
+      			commitChk : "${plan.commitChk}",
+      			strtDt : "${plan.strtDt}",
+      			endDt : "${plan.endDt}",
+      			userId : "${plan.userId}"
+      		}<c:if test="${!loop.last}">,</c:if>
+      		</c:forEach>
+      	];
 
-      //plan추가
-      const planList = [
-      	<c:forEach var="plan" items="${planList}" varStatus="loop">
-      	{
-      		boardId : "${plan.boardId}",
-      		year : "${plan.year}",
-      		month : "${plan.month}",
-      		day : "${plan.day}",
-      		boardFullDt : "${plan.boardFullDt}",
-      		title : "${plan.title}",
-      		content : "${plan.content}",
-      		backColor : "${plan.backColor}",
-      		commitChk : "${plan.commitChk}",
-      		strtDt : "${plan.strtDt}",
-      		endDt : "${plan.endDt}",
-      		userId : "${plan.userId}"
-      	}<c:if test="${!loop.last}">,</c:if>
-      	</c:forEach>
-      ];
-
-      planList.forEach(plan => {
-      	addPlan({
-      		title : plan.title,
-      		dt    : plan.year + plan.month + plan.day,
-      		boardId : plan.boardId,
-      		commitChk : plan.commitChk
-      	})
-      });
+      	planList.forEach(plan => {
+	      	addPlan({
+    	  		title : plan.title,
+      			dt    : plan.year + plan.month + plan.day,
+      			boardId : plan.boardId,
+      			commitChk : plan.commitChk
+      		})
+      	});
     </script>
   </body>
 </html>
