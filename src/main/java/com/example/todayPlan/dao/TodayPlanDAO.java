@@ -61,7 +61,7 @@ public class TodayPlanDAO {
 							+ ",HOLIDAY_YN "
 							+ ",HOLIDAY_NAME "
 							+ ",DATE_FORMAT(DT, '%Y%m%d') AS DT, "
-							+ "CASE WHEN DT < CURDATE()+1 " 
+							+ "CASE WHEN DT < CURDATE() " 
 							+ "THEN 'N' "
 							+ "ELSE 'Y' END AS DT_RESULT "
 							+ "FROM 	CALENDAR "

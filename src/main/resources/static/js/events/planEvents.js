@@ -105,8 +105,8 @@ export function addPlan(planInfo){
 	let chkHtml = "";
 	const paramDt = planInfo.dt;
 	const nowDt = new Date();
-
-	if(nowDt > new Date(paramDt.substring(0,4)+"-"+paramDt.substring(4,6)+"-"+paramDt.substring(6,8))){
+	
+	if(parseInt(getDateFormat('yyyyMMdd', nowDt)) > parseInt(paramDt)){
 		chkHtml = "<input type='checkbox' disabled='disabled' class='tdChk' id='chkBox"+planInfo.boardId+"'>"; 
 	    cell2.setAttribute("class", "boardTdChkStyle");
 	}else{

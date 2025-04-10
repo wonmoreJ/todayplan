@@ -58,7 +58,7 @@ export async function getPlanInfo(boardId){
 		document.getElementById("modal_boardFullDt_view").textContent = getDateFormat('yyyy년MM월dd일',result["boardFullDt"]);
 		document.getElementById("modal_title_view").textContent = result["title"];
 		document.getElementById("modal_content_view").textContent = result["content"];
-		if(nowDt > new Date(paramDt.substring(0,4)+"-"+paramDt.substring(4,6)+"-"+paramDt.substring(6,8))){
+		if(parseInt(getDateFormat('yyyyMMdd', nowDt)) > parseInt(paramDt)){
 			document.getElementById("modal_delete_btn").style.display = "none";
 		}else{
 			document.getElementById("modal_delete_btn").style.display = "block";
